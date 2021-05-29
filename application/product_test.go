@@ -1,23 +1,20 @@
 package application_test
 
 import (
-	uuid "github.com/satori/go.uuid"
 	"github.com/stretchr/testify/require"
 	"github.com/valdirmendesdev/go-hexagonal/application"
 	"testing"
 )
 
-func createNewProduct(id, name, status string, price float64 ) application.Product {
-	return application.Product{
-		ID:     id,
-		Name:   name,
-		Price:  price,
-		Status: status,
-	}
+func createNewProduct(name string, price float64 ) *application.Product {
+	product := application.NewProduct()
+	product.Name = name
+	product.Price = price
+	return product
 }
 
 func TestProduct_Enable(t *testing.T) {
-	product := createNewProduct("", "", application.DISABLED, 10)
+	product := createNewProduct("", 10)
 
 	err := product.Enable()
 	require.Nil(t, err)
@@ -30,7 +27,8 @@ func TestProduct_Enable(t *testing.T) {
 }
 
 func TestProduct_Disable(t *testing.T) {
-	product := createNewProduct("","", application.ENABLED, 0)
+	product := createNewProduct("", 0)
+	product.Status = application.ENABLED
 
 	err := product.Disable()
 	require.Nil(t, err)
@@ -43,7 +41,7 @@ func TestProduct_Disable(t *testing.T) {
 }
 
 func TestProduct_IsValid(t *testing.T) {
-	product := createNewProduct(uuid.NewV4().String(), "hello", "", 10)
+	product := createNewProduct("hello", 10)
 
 	isValid, err := product.IsValid()
 	require.Nil(t, err)
@@ -64,7 +62,7 @@ func TestProduct_IsValid(t *testing.T) {
 	require.EqualError(t, err, "the price must be greater or equal to zero")
 	require.False(t, isValid)
 
-	product = createNewProduct("","","", 0)
+	product = &application.Product{}
 	isValid, err = product.IsValid()
 	require.False(t, isValid)
 	require.EqualError(t, err, "ID: Missing required field;Name: non zero value required")
