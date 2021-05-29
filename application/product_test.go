@@ -43,10 +43,11 @@ func TestProduct_Disable(t *testing.T) {
 }
 
 func TestProduct_IsValid(t *testing.T) {
-	product := createNewProduct(uuid.NewV4().String(), "hello", application.DISABLED, 10)
+	product := createNewProduct(uuid.NewV4().String(), "hello", "", 10)
 
 	isValid, err := product.IsValid()
 	require.Nil(t, err)
+	require.Equal(t, application.DISABLED, product.Status)
 	require.True(t, isValid)
 
 	product.Status = "invalid"
@@ -62,4 +63,9 @@ func TestProduct_IsValid(t *testing.T) {
 	isValid, err = product.IsValid()
 	require.EqualError(t, err, "the price must be greater or equal to zero")
 	require.False(t, isValid)
+
+	product = createNewProduct("","","", 0)
+	isValid, err = product.IsValid()
+	require.False(t, isValid)
+	require.EqualError(t, err, "ID: Missing required field;Name: non zero value required")
 }
