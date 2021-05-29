@@ -6,7 +6,7 @@ import (
 	"testing"
 )
 
-func createNewProduct(name string, price float64 ) *application.Product {
+func createNewProduct(name string, price float64) *application.Product {
 	product := application.NewProduct()
 	product.Name = name
 	product.Price = price
@@ -22,7 +22,7 @@ func TestProduct_Enable(t *testing.T) {
 
 	product.Price = 0
 	err = product.Enable()
-	require.EqualError(t, err,"the price must be greater than zero to enable the product")
+	require.EqualError(t, err, "the price must be greater than zero to enable the product")
 	require.Equal(t, application.ENABLED, product.Status)
 }
 
