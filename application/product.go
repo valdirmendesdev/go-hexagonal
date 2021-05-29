@@ -1,6 +1,13 @@
 package application
 
-import "errors"
+import (
+	"errors"
+	"github.com/asaskevich/govalidator"
+)
+
+func init() {
+	govalidator.SetFieldsRequiredByDefault(true)
+}
 
 type ProductInterface interface {
 	IsValid() (bool, error)
@@ -14,18 +21,34 @@ type ProductInterface interface {
 
 const (
 	DISABLED = "disabled"
-	ENABLED = "enabled"
+	ENABLED  = "enabled"
 )
 
 type Product struct {
-	ID string
-	Name string
-	Price float64
-	Status string
+	ID     string  `valid:"uuidv4"`
+	Name   string  `valid:"required"`
+	Price  float64 `valid:"float,optional"`
+	Status string  `valid:"required"`
 }
 
 func (p *Product) IsValid() (bool, error) {
-	return false, nil
+	if p.Status == "" {
+		p.Status = DISABLED
+	}
+
+	if p.Status != ENABLED && p.Status != DISABLED {
+		return false, errors.New("the status must be enabled or disabled")
+	}
+
+	if p.Price < 0 {
+		return false, errors.New("the price must be greater or equal to zero")
+	}
+
+	if _, err := govalidator.ValidateStruct(p); err != nil {
+		return false, err
+	}
+	
+	return true, nil
 }
 
 func (p *Product) Enable() error {
@@ -45,7 +68,7 @@ func (p *Product) Disable() error {
 }
 
 func (p *Product) GetID() string {
-	return  p.ID
+	return p.ID
 }
 
 func (p *Product) GetName() string {
