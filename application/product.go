@@ -1,5 +1,7 @@
 package application
 
+import "errors"
+
 type ProductInterface interface {
 	IsValid() (bool, error)
 	Enable() error
@@ -27,25 +29,29 @@ func (p *Product) IsValid() (bool, error) {
 }
 
 func (p *Product) Enable() error {
-	panic("implement me")
+	if p.Price > 0 {
+		p.Status = ENABLED
+		return nil
+	}
+	return errors.New("the price must be greater than zero to enable the product")
 }
 
 func (p *Product) Disable() error {
-	panic("implement me")
+	return nil
 }
 
 func (p *Product) GetID() string {
-	panic("implement me")
+	return  p.ID
 }
 
 func (p *Product) GetName() string {
-	panic("implement me")
+	return p.Name
 }
 
 func (p *Product) GetStatus() string {
-	panic("implement me")
+	return p.Status
 }
 
 func (p *Product) GetPrice() float64 {
-	panic("implement me")
+	return p.Price
 }
