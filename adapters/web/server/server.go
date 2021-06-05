@@ -3,6 +3,7 @@ package server
 import (
 	"github.com/gorilla/mux"
 	"github.com/urfave/negroni"
+	"github.com/valdirmendesdev/go-hexagonal/adapters/web/handler"
 	"github.com/valdirmendesdev/go-hexagonal/application"
 	"log"
 	"net/http"
@@ -14,7 +15,7 @@ type WebServer struct {
 	Service application.ProductServiceInterface
 }
 
-func NewWebServer() *WebServer {
+func MakeNewWebServer() *WebServer {
 	return &WebServer{}
 }
 
@@ -25,10 +26,13 @@ func (w WebServer) Serve() {
 		negroni.NewLogger(),
 	)
 
+	handler.MakeProductHandlers(r, n, w.Service)
+	http.Handle("/", r)
+
 	server := &http.Server{
 		ReadHeaderTimeout: 10 * time.Second,
 		WriteTimeout:      10 * time.Second,
-		Addr:              ":8080",
+		Addr:              ":9000",
 		Handler:           http.DefaultServeMux,
 		ErrorLog:          log.New(os.Stderr, "log: ", log.Lshortfile),
 	}
