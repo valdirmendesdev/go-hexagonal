@@ -31,12 +31,39 @@ func TestRun(t *testing.T) {
 	service.EXPECT().Enable(gomock.Any()).Return(productMock, nil).AnyTimes()
 	service.EXPECT().Disable(gomock.Any()).Return(productMock, nil).AnyTimes()
 
-	resultExpected := fmt.Sprintf("Product ID %s with the name %s has been created with price %f and status %s",
-		productID,
-		productName,
-		productPrice,
-		productStatus)
-	result, err := cli.Run(service, "create", productID, productName, productPrice)
-	require.Nil(t, err)
-	require.Equal(t, resultExpected, result)
+	testsTable := []struct {
+		action string
+		result string
+	}{
+		{
+			action: "create",
+			result: fmt.Sprintf("Product ID %s with the name %s has been created with price %f and status %s",
+				productID,
+				productName,
+				productPrice,
+				productStatus),
+		},
+		{
+			action: "enable",
+			result: fmt.Sprintf("Product %s has been enabled.", productName),
+		},
+		{
+			action: "disable",
+			result: fmt.Sprintf("Product %s has been disabled.", productName),
+		},
+		{
+			action: "get",
+			result: fmt.Sprintf("Product ID: %s\nName: %s\nPrice: %f\nStatus: %s",
+				productID,
+				productName,
+				productPrice,
+				productStatus),
+		},
+	}
+
+	for _, test := range testsTable {
+		result, err := cli.Run(service, test.action, productID, productName, productPrice)
+		require.Nil(t, err)
+		require.Equal(t, test.result, result)
+	}
 }
