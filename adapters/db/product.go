@@ -2,7 +2,6 @@ package db
 
 import (
 	"database/sql"
-	"fmt"
 	_ "github.com/mattn/go-sqlite3"
 	"github.com/valdirmendesdev/go-hexagonal/application"
 )
@@ -76,7 +75,6 @@ func (p *ProductDb) update(product application.ProductInterface) (application.Pr
 func (p *ProductDb) Save(product application.ProductInterface) (application.ProductInterface, error) {
 	var rows int
 	p.db.QueryRow("select count(id) from products where id=?", product.GetID()).Scan(&rows)
-	fmt.Printf("Número de linhas %v",rows)
 	if rows == 0 {
 		_, err := p.create(product)
 		if err != nil {

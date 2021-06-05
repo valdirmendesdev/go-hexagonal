@@ -16,6 +16,7 @@ limitations under the License.
 package cmd
 
 import (
+	"fmt"
 	"github.com/spf13/cobra"
 	"github.com/valdirmendesdev/go-hexagonal/adapters/cli"
 )
@@ -36,7 +37,12 @@ Cobra is a CLI library for Go that empowers applications.
 This application is a tool to generate the needed files
 to quickly create a Cobra application.`,
 	Run: func(cmd *cobra.Command, args []string) {
-		cli.Run(service, action, productID, productName, productPrice)
+		result, err := cli.Run(service, action, productID, productName, productPrice)
+		if err != nil {
+			fmt.Println(err)
+			return
+		}
+		fmt.Println(result)
 	},
 }
 
